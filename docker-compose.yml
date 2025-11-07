@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - LAMA_DEVICE=cuda
+    device_requests:
+      - driver: nvidia
+        count: all
+        capabilities: [gpu]
