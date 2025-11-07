@@ -28,7 +28,7 @@ Visit `http://127.0.0.1:8000/docs` for the interactive OpenAPI UI.
 Ensure the NVIDIA Container Toolkit is installed on the host.
 
 ```bash
-docker compose up --build
+docker compose --compatibility up --build
 ```
 
 The service listens on port `8000` (`http://127.0.0.1:8000`).
