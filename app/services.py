@@ -71,11 +71,22 @@ class LamaWatermarkRemover:
         return Image.fromarray(result)
 
 
-async def fetch_image(url: str, timeout: float = 10.0) -> Image.Image:
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
-        response = await client.get(url)
-        response.raise_for_status()
-        return Image.open(io.BytesIO(response.content)).convert("RGB")
+async def fetch_image(url: str, timeout: float = 10.0, max_retries: int = 3) -> Image.Image:
+    last_exception = None
+    
+    for attempt in range(max_retries):
+        try:
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:
+                response = await client.get(url)
+                response.raise_for_status()
+                return Image.open(io.BytesIO(response.content)).convert("RGB")
+        except Exception as exc:
+            last_exception = exc
+            if attempt < max_retries - 1:
+                await asyncio.sleep(2)
+            continue
+    
+    raise last_exception
 
 
 def image_to_base64(image: Image.Image, format: str = "PNG") -> str:
